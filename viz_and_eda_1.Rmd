@@ -1,5 +1,5 @@
 ---
-title: "viz_and_eda_1"
+title: "Visualization and EDA 1"
 author: "Lina Marcinczyk"
 date: "2026-10-06"
 output: html_document
@@ -144,8 +144,23 @@ weather_df |>
 # saving and embedding plots
 
 ```{r}
+ggp_weather = 
+  weather_df |> 
+  ggplot(aes(x = tmin, y = tmax)) + 
+  geom_point(aes(color = name), alpha = .5) 
 
+ggsave("ggp_weather.pdf", ggp_weather, width = 8, height = 5)
 ```
+
+```{r}
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .8,
+  out.width = "90%"
+)
+```
+
+# Learning Assessment: Set global options for your figure sizes in the “setup” code chunk and re-knit your document. What happens when you change fig.asp? What about out.width?
 
 
 
