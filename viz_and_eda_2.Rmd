@@ -8,6 +8,7 @@ output: html_document
 ```{r}
 library(tidyverse)
 library(viridis)
+library(patchwork)
 library(p8105.datasets)
 
 data("weather_df")
@@ -60,4 +61,102 @@ weather_df |>
     discrete = TRUE
   )
 ```
+
+themes
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point() +
+  viridis::scale_color_viridis(
+    name = "Location", 
+    discrete = TRUE
+  ) +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point() +
+  viridis::scale_color_viridis(
+    name = "Location", 
+    discrete = TRUE
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+theme_bw() instead of greyscale
+theme_minimal() takes the box off
+theme_classic() takes the grid away
+wes anderson theme package???
+
+# A good reference plot!!
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_point(aes(size = prcp), alpha = .5) +
+  viridis::scale_color_viridis(
+    name = "Location", 
+    discrete = TRUE
+  ) +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  geom_smooth(se = FALSE) +
+  facet_grid(. ~ name) +
+  labs(
+    title = "Seasonal Trends in Max Temp",
+    x = "Date",
+    y = "Max Temp",
+    caption = "Max daily temp in three weather stations over the years",
+    color = "Location"
+  ) 
+```
+
+Two more weird useful plot things
+Overlaying two dfs in different ways 
+
+```{r}
+central_park_df =
+  weather_df |> 
+  filter(name == "CentralPark_NY")
+
+molokai_df =
+  weather_df |> 
+  filter(name == "Molokai_HI")
+
+ggplot(molokai_df, aes(x = date, y = tmax, color = name)) +
+  geom_point() +
+  geom_line(data = central_park_df)
+```
+
+Multiple panels with different plot types
+
+```{r}
+ggp_tmax_tmin =
+  weather_df |> 
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point()
+
+ggp_prcp_density = 
+  weather_df |> 
+  filter(prcp >0) |> 
+  ggplot(aes(x = prcp, fill = name)) +
+  geom_density(alpha = .5)
+
+ggp_seasonal = 
+  weather_df |> 
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_point()
+  
+(ggp_tmax_tmin + ggp_prcp_density)
+
+(ggp_tmax_tmin / ggp_prcp_density)
+
+(ggp_tmax_tmin + ggp_prcp_density) / ggp_seasonal
+```
+remove the legend from two of them for less bulk
+
 
