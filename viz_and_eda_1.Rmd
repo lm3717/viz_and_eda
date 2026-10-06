@@ -67,5 +67,88 @@ weather_df |>
 
 # Learning Assessment: In the preceding, we set the alpha aesthetic “by hand” instead of mapping it to a variable. This is possible for other aesthetics too. To check your understanding of this point, try to explain why the two lines below don’t produce the same result:
 
+```{r}
+weather_df |> ggplot() + geom_point(aes(x = tmax, y = tmin), color = "blue")
+weather_df |> ggplot() + geom_point(aes(x = tmax, y = tmin, color = "blue"))
+```
+
+# color is either inside or outside of the aes parentheses - outside actually produces blue, while inside produces orange?
+
+# Solution: In the first attempt, we’re defining the color of the points by hand; in the second attempt, we’re implicitly creating a color variable that has the value blue everywhere; ggplot is then assigning colors according to this variable using the default color scheme.
+
+# Univariate plots
+
+#Histogram
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmax, fill = name)) +
+  geom_histogram(position = "dodge", binwidth = 2)
+```
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmax, fill = name)) +
+  geom_density(alpha = .4, adjust = .5, color = "blue") +
+  geom_rug()
+```
+
+# boxplots
+```{r}
+weather_df |> 
+  ggplot(aes(x = name, y = tmax)) +
+  geom_boxplot()
+```
+
+
+# Violin plots
+```{r}
+weather_df |> 
+  ggplot(aes(x = name, y = tmax)) +
+  geom_violin(aes(fill = name), alpha = .5) +
+  stat_summary(fun = "median", color = "blue")
+```
+
+# Ridge plot
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmax, y = name)) + 
+  geom_density_ridges(scale = .85)
+```
+
+# Learning Assessment: Make plots that compare precipitation across locations. Try a histogram, a density plot, a boxplot, a violin plot, and a ridgeplot; use aesthetic mappings to make your figure readable.
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = prcp, fill = name)) +
+  geom_histogram()
+
+weather_df |> 
+  ggplot(aes(x = prcp)) +
+  geom_density(aes(fill = name), alpha = .5)
+
+weather_df |> 
+  ggplot(aes(x = prcp, y = name)) +
+  geom_density_ridges(scale = .85)
+
+weather_df |> 
+  ggplot(aes(x = prcp, y = name)) +
+  geom_boxplot()
+
+weather_df |> 
+  filter(prcp > 0) |> 
+  ggplot(aes(x = prcp, y = name)) + 
+  geom_density_ridges(scale = .85)
+```
+
+# saving and embedding plots
+
+```{r}
+
+```
+
+
+
+
 
 
