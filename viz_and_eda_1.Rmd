@@ -1,0 +1,71 @@
+---
+title: "viz_and_eda_1"
+author: "Lina Marcinczyk"
+date: "2026-10-06"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(ggridges)
+library(hexbin)
+```
+
+```{r}
+library(p8105.datasets)
+data("weather_df")
+```
+
+# Basic scatterplot
+
+```{r}
+ggplot(weather_df, aes(x = tmin, y = tmax)) +
+  geom_point()
+```
+
+```{r}
+ggp_weather = 
+  weather_df |>
+  ggplot(aes(x = tmin, y = tmax)) 
+
+ggp_weather + geom_point()
+```
+
+# Advanced Scatterplot
+```{r}
+weather_df |> 
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_point(aes(size = prcp), alpha = .5) +
+  geom_smooth(se = FALSE) +
+  facet_grid(. ~ name)
+```
+
+# Learning Assessment: Write a code chain that starts with weather_df; focuses only on Central Park, converts temperatures to Fahrenheit, makes a scatterplot of min vs. max temperature, and overlays a linear regression line (using options in geom_smooth()).
+
+```{r}
+weather_df |> 
+  mutate(
+    tmax_fahr = tmax * (9 / 5) + 32,
+    tmin_fahr = tmin * (9 / 5) + 32) |> 
+  ggplot(aes(x = tmin_fahr, y = tmax_fahr)) +
+  geom_point(alpha = .5) +
+  geom_smooth(method = "lm", se = FALSE) 
+```
+
+# Odds and Ends
+```{r}
+weather_df |> 
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_smooth(se = FALSE)
+```
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmax, y = tmin)) +
+  geom_hex()
+```
+
+# Learning Assessment: In the preceding, we set the alpha aesthetic “by hand” instead of mapping it to a variable. This is possible for other aesthetics too. To check your understanding of this point, try to explain why the two lines below don’t produce the same result:
+
+
+
