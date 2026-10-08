@@ -136,6 +136,99 @@ weather_df |>
   geom_line()
 ```
 
+```{r}
+weather_df |> 
+  group_by(name) |> 
+  mutate(center_tmax = tmax - mean(tmax, na.rm = TRUE)) |> 
+  ggplot(aes(x = date, y = center_tmax, color = name)) +
+  geom_point()
+```
+
+what about window functions -- ranking things
+
+```{r}
+weather_df |> 
+  group_by(name, month) |> 
+  mutate(temp_rank = min_rank(desc(tmax))) |> 
+  filter(temp_rank < 2)
+```
+
+lead and lag
+
+```{r}
+weather_df |> 
+  group_by(name) |> 
+  mutate(
+    lagged_tmax = lag(tmax, 3), 
+    lead_tmax = lead(tmax)
+    )
+```
+
+```{r}
+weather_df |> 
+  group_by(name) |> 
+  mutate(
+    lagged_tmax = lag(tmax), 
+    temp_change = tmax - lagged_tmax
+    ) |> 
+  summarise(
+    mean_temp_change = mean(temp_change, na.rm = TRUE),
+    sd_temp_change = sd(temp_change, na.rm = TRUE)
+  )
+```
+
+revisit some examples
+
+```{r}
+pulse_df = 
+  haven::read_sas("data/public_pulse_data.sas7bdat copy") |> 
+  janitor::clean_names() |> 
+  pivot_longer(
+    bdi_score_bl:bdi_score_12m,
+    names_to = "visit", 
+    names_prefix = "bdi_score_",
+    values_to = "bdi") |>
+  mutate(
+    visit = replace(visit, visit == "bl", "00m"),
+    visit = factor(visit)) |> 
+  select(id, visit, bdi, everything())
+
+pulse_df |> 
+  group_by(visit) |> 
+  summarize(
+    mean_bdi = mean(bdi, na.rm = TRUE), 
+    median_bdi = median(bdi, na.rm = TRUE)
+  ) |> 
+  knitr::kable(digits = 2)
+```
+
+FAS data
+
+```{r}
+pups_df = 
+  read_csv("data/FAS_pups.csv", skip = 3, na = c("", ".", "NA")) |> 
+  janitor::clean_names() 
+
+litters_df = 
+  read_csv("data/FAS_litters.csv", na = c("", ".", "NA")) |> 
+  janitor::clean_names() |> 
+  separate(group, into = c("dose", "day_of_tx"), 3)
+
+fas_df =
+  left_join(pups_df, litters_df, by = "litter_number") |> 
+  select(litter_number, dose, day_of_tx, everything())
+
+fas_df |> 
+  group_by(dose, day_of_tx) |> 
+  summarise(
+    mean_ears = mean(pd_ears, an.rm = TRUE)
+  ) |> 
+  pivot_wider(
+    names_from = day_of_tx, 
+    values_from = mean_ears
+  )
+
+```
 
 
 
